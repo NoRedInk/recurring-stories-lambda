@@ -1,0 +1,10 @@
+{
+  "credstash_tracker_token_name": "pivotal-tracker-token",
+  "credstash_aws_region": "us-west-2",
+  "rules": {
+    "my-schedule": {
+      "project_id": 1234567,
+      "any_parameter": "accepted by https://www.pivotaltracker.com/help/api/rest/v5#projects_project_id_stories_post_operation"
+    }
+  }
+}
