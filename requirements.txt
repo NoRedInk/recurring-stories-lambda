@@ -4,8 +4,8 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-boto3==1.4.1              # via credstash
-botocore==1.4.70          # via boto3, s3transfer
+boto3==1.4.0
+botocore==1.4.55
 credstash==1.12.0
 docutils==0.12            # via botocore
 futures==3.0.5            # via s3transfer
