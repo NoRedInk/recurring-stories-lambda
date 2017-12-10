@@ -41,7 +41,7 @@ def read_config(config_path=CONFIG_FILE):
 
 def iter_rule_names(event):
     for resource in event['resources']:
-        yield resource.split('/')[1]
+        yield resource.split('/', 1)[-1]
 
 
 def process_rule(config, pt_token, rule_name):
