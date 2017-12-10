@@ -1,7 +1,6 @@
 import main
 
 import requests
-import credstash
 
 
 MOCK_EVENT = {
@@ -18,11 +17,20 @@ MOCK_EVENT = {
 }
 
 def test_process_event(mocker):
-    mocker.patch.object(credstash, 'getSecret')
-    mocker.patch.object(requests, 'post')
+    mock_client = mocker.patch.object(main.boto3, 'client').return_value
+    mock_client.get_parameter.return_value = {
+        'Parameter': {
+            'Value': 'some secret'
+        }
+    }
+    mock_post = mocker.patch.object(requests, 'post')
+    mock_move_to_top = mocker.patch.object(main, 'move_to_top_of_backlog')
     config = main.read_config('config.json.sample')
 
     rv = main.process_event(config, MOCK_EVENT)
+
+    mock_post.assert_called()
+    mock_move_to_top.assert_called()
 
     assert len(rv) > 0
 

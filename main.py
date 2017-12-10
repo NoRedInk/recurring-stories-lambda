@@ -3,8 +3,9 @@ from __future__ import print_function
 import types
 import datetime
 import json
+
 import requests
-import credstash
+import boto3
 
 
 CONFIG_FILE = 'config.json'
@@ -20,9 +21,11 @@ def on_event(event, context):
 
 
 def process_event(config, event):
-    token = credstash.getSecret(
-        config['credstash_tracker_token_name'],
-        region=config['credstash_aws_region'])
+    ssm = boto3.client('ssm', region_name=config['ssm_aws_region'])
+    token = ssm.get_parameter(
+        Name=config['ssm_tracker_token_name'],
+        WithDecryption=True,
+    )['Parameter']['Value']
     rv = []
 
     for rule_name in iter_rule_names(event):
