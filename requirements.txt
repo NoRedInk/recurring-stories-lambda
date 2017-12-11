@@ -4,14 +4,12 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-boto3==1.4.0
-botocore==1.4.55
-credstash==1.12.0
+boto3==1.4.8
+botocore==1.8.11
 docutils==0.12            # via botocore
 futures==3.0.5            # via s3transfer
 jmespath==0.9.0           # via boto3, botocore
-pycrypto==2.6.1           # via credstash
 python-dateutil==2.5.3    # via botocore
 requests==2.11.1
-s3transfer==0.1.9         # via boto3
+s3transfer==0.1.12        # via boto3
 six==1.10.0               # via python-dateutil
