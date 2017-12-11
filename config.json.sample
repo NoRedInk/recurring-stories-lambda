@@ -4,7 +4,11 @@
   "rules": {
     "lambda-rule-name": {
       "project_id": 1234567,
-      "any_parameter": "accepted by https://www.pivotaltracker.com/help/api/rest/v5#projects_project_id_stories_post_operation"
+      "story_type": "chore",
+      "name": "value can interpolate {date}",
+      "labels": ["label-name"],
+      "description": "link to playbook",
+      "any_other_parameter": "accepted by https://www.pivotaltracker.com/help/api/rest/v5#projects_project_id_stories_post_operation"
     }
   }
 }
