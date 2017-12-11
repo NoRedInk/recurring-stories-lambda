@@ -1,4 +1,4 @@
-Create periodic Pivotal Tracker chores with AWS Lambda.
+Create recurring Pivotal Tracker stories with AWS Lambda.
 
 1. Copy config.json.sample to config.json and configure the following as needed:
    - `ssm_tracker_token_name`: Name of SSM Parameter Store parameter to store

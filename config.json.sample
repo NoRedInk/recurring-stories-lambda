@@ -1,5 +1,5 @@
 {
-  "ssm_tracker_token_name": "/periodic-pivotal-chores/pivotal-tracker-api-token",
+  "ssm_tracker_token_name": "/recurring-pivotal-stories/pivotal-tracker-api-token",
   "ssm_aws_region": "us-west-2",
   "rules": {
     "lambda-rule-name": {
