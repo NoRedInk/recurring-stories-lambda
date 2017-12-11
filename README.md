@@ -8,7 +8,9 @@ Create recurring Pivotal Tracker stories with AWS Lambda.
       you set up later. The values define which project to create the story in
       and other attributes of the story.
 2. Package up `main.py` and `config.json` and deploy as an AWS Lambda function.
-3. Store your Pivotal Tracker API token in SSM Parameter Store:
+3. Allow the Lambda function to call `ssm:GetParameter` for the API token parameter
+   by attaching the appropriate IAM role policy.
+4. Store your Pivotal Tracker API token in SSM Parameter Store:
 ```
 aws --region=region-configured-in-config-json \
     ssm put-parameter \
@@ -16,7 +18,7 @@ aws --region=region-configured-in-config-json \
     --value "your-tracker-api-token" \
     --type SecureString
 ```
-4. [Set up CloudWatch Event rules](http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/RunLambdaSchedule.html)
+5. [Set up CloudWatch Event rules](http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/RunLambdaSchedule.html)
    to trigger the Lambda function with the desired frequency.
 
 ## Running tests
