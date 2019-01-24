@@ -23,7 +23,7 @@ def on_event(event, context):
 def process_event(config, event):
     ssm = boto3.client('ssm', region_name=config['ssm_aws_region'])
     token = ssm.get_parameter(
-        Name=config['ssm_tracker_token_name'],
+        Name=config['ssm_pt_token_path'],
         WithDecryption=True,
     )['Parameter']['Value']
     rv = []

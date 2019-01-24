@@ -1,7 +1,7 @@
 Create recurring Pivotal Tracker stories with AWS Lambda.
 
 1. Copy config.json.sample to config.json and configure the following as needed:
-   - `ssm_tracker_token_name`: Name of SSM Parameter Store parameter to store
+   - `ssm_pt_token_path`: Name of SSM Parameter Store parameter to store
       your API token for Pivotal Tracker
    - `ssm_aws_region`: Region of SSM Parameter Store to use
    - `rules`: Keys of this object correspond to the CloudWatch Events rules
