@@ -141,7 +141,7 @@ class PivotalTracker(object):
 
 class Targetprocess(object):
     DEFAULT_STORY_PARAMS = {
-        'NumericPriority': 0
+        'NumericPriority': 1
     }
 
     def __init__(self, domain, token, story_params):
