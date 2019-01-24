@@ -58,15 +58,15 @@ def process_rule(config, rule_name):
 def handler_factory(config, story_params):
     service = story_params.pop('service')
     if service == 'pivotal-tracker':
-        token = fetch_token(config['ssm_aws_region'], config['ssm_pt_token_path'])
+        token = fetch_secret(config['ssm_aws_region'], config['ssm_pt_token_path'])
         return PivotalTracker(token, story_params)
     elif service == 'targetprocess':
-        token = fetch_token(config['ssm_aws_region'], config['ssm_tp_token_path'])
+        token = fetch_secret(config['ssm_aws_region'], config['ssm_tp_token_path'])
         return Targetprocess(token, story_params)
     raise Exception('Unknown service {}'.format(service))
 
 
-def fetch_token(region, ssm_path):
+def fetch_secret(region, ssm_path):
     ssm = boto3.client('ssm', region_name=region)
     return ssm.get_parameter(
         Name=ssm_path,
