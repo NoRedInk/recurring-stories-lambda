@@ -157,7 +157,7 @@ class Targetprocess(object):
         return created_story
 
     def _stories_endpoint(self):
-        return "https://md5.tpondemand.com/api/v1/UserStories/"
+        return "https://restapi.tpondemand.com/api/v1/UserStories"
 
     def _with_auth(self, **params):
         params['token'] = self._token
