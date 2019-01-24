@@ -161,6 +161,7 @@ class Targetprocess(object):
 
     def _with_auth(self, **params):
         params['token'] = self._token
+        params['format'] = 'json'
         return params
 
 
