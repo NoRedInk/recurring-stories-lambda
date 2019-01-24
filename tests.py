@@ -5,7 +5,7 @@ import requests
 import main
 
 
-def test_process_event(mocker):
+def test_process_event_pivotal_tracker(mocker):
     mock_client = mocker.patch.object(main.boto3, 'client').return_value
     mock_client.get_parameter.return_value = {
         'Parameter': {
@@ -29,6 +29,27 @@ def test_process_event(mocker):
     mock_post.assert_called()
     mock_get.assert_called()
     mock_put.assert_called()
+
+    assert len(rv) > 0
+
+
+def test_process_event_targetprocess(mocker):
+    mock_client = mocker.patch.object(main.boto3, 'client').return_value
+    mock_client.get_parameter.return_value = {
+        'Parameter': {
+            'Value': 'some secret'
+        }
+    }
+    # called in create_story
+    mock_post = mocker.patch.object(requests, 'post')
+
+    config = main.read_config('config.json.sample')
+    with open('test_event_two.json', 'r') as f:
+        mock_event = json.load(f)
+
+    rv = main.process_event(config, mock_event)
+
+    mock_post.assert_called()
 
     assert len(rv) > 0
 

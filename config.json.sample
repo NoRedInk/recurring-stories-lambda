@@ -1,5 +1,6 @@
 {
   "ssm_pt_token_path": "/recurring-stories-lambda/pivotal-tracker-api-token",
+  "ssm_tp_token_path": "/recurring-stories-lambda/targetprocess-api-token",
   "ssm_aws_region": "us-west-2",
   "rules": {
     "lambda-rule-name-one": {
@@ -10,6 +11,14 @@
       "labels": ["label-name"],
       "description": "link to playbook",
       "any_other_parameter": "accepted by https://www.pivotaltracker.com/help/api/rest/v5#projects_project_id_stories_post_operation"
+    },
+    "lambda-rule-name-two": {
+      "service": "targetprocess",
+      "Project": {"Id": 1234567},
+      "Name": "value can interpolate {date}",
+      "Tags": "tag1,tag2",
+      "Description": "link to playbook",
+      "AnyOtherParameter": "accepted by https://dev.targetprocess.com/v1.0/reference#userstories-post"
     }
   }
 }

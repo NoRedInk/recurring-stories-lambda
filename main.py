@@ -52,6 +52,9 @@ def handler_factory(config, story_params):
     if service == 'pivotal-tracker':
         token = fetch_token(config['ssm_aws_region'], config['ssm_pt_token_path'])
         return PivotalTracker(token, story_params)
+    elif service == 'targetprocess':
+        token = fetch_token(config['ssm_aws_region'], config['ssm_tp_token_path'])
+        return Targetprocess(token, story_params)
     raise Exception('Unknown service {}'.format(service))
 
 
@@ -124,6 +127,31 @@ class PivotalTracker(object):
         return {
             'X-TrackerToken': self._token,
         }
+
+
+class Targetprocess(object):
+    DEFAULT_STORY_PARAMS = {
+        'NumericPriority': 0
+    }
+
+    def __init__(self, token, story_params):
+        self._story_params = dict(self.DEFAULT_STORY_PARAMS, **story_params)
+        self._token = token
+
+    def create_story(self):
+        response = requests.post(
+            self._stories_endpoint(),
+            json=self._story_params,
+            params=self._with_auth())
+        created_story = response.json()
+        return created_story
+
+    def _stories_endpoint(self):
+        return "https://md5.tpondemand.com/api/v1/UserStories/"
+
+    def _with_auth(self, **params):
+        params['token'] = self._token
+        return params
 
 
 def interpolate_story_spec(spec):
