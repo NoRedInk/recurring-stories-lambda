@@ -62,7 +62,8 @@ def handler_factory(config, story_params):
         return PivotalTracker(token, story_params)
     elif service == 'targetprocess':
         token = fetch_secret(config['ssm_aws_region'], config['ssm_tp_token_path'])
-        return Targetprocess(token, story_params)
+        domain = fetch_secret(config['ssm_aws_region'], config['ssm_tp_domain'])
+        return Targetprocess(domain, token, story_params)
     raise Exception('Unknown service {}'.format(service))
 
 
@@ -143,9 +144,10 @@ class Targetprocess(object):
         'NumericPriority': 0
     }
 
-    def __init__(self, token, story_params):
-        self._story_params = dict(self.DEFAULT_STORY_PARAMS, **story_params)
+    def __init__(self, domain, token, story_params):
+        self._domain = domain
         self._token = token
+        self._story_params = dict(self.DEFAULT_STORY_PARAMS, **story_params)
 
     def create_story(self):
         response = requests.post(
@@ -157,7 +159,7 @@ class Targetprocess(object):
         return created_story
 
     def _stories_endpoint(self):
-        return "https://restapi.tpondemand.com/api/v1/UserStories"
+        return "https://{}/api/v1/UserStories".format(self._domain)
 
     def _with_auth(self, **params):
         params['token'] = self._token

@@ -1,6 +1,7 @@
 {
   "ssm_pt_token_path": "/recurring-stories-lambda/pivotal-tracker-api-token",
   "ssm_tp_token_path": "/recurring-stories-lambda/targetprocess-api-token",
+  "ssm_tp_domain": "/recurring-stories-lambda/targetprocess-domain",
   "ssm_aws_region": "us-west-2",
   "rules": {
     "lambda-rule-name-one": {
