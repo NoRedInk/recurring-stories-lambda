@@ -3,12 +3,19 @@ from __future__ import print_function
 import types
 import datetime
 import json
+import logging
 
 import requests
 import boto3
 
 
 CONFIG_FILE = 'config.json'
+logger = logging.getLogger('main')
+logger.setLevel(logging.DEBUG)
+# debug logs from HTTP requests include the query params,
+# which may contain access tokens: suppress them.
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 def on_event(event, context):
@@ -43,6 +50,7 @@ def process_rule(config, rule_name):
     story_spec = config['rules'][rule_name]
     story_params = interpolate_story_spec(story_spec)
     handler = handler_factory(config, story_params)
+    logger.info('handler_factory returned handler {}'.format(handler.__class__.__name__))
     story = handler.create_story()
     return [story]
 
@@ -80,6 +88,7 @@ class PivotalTracker(object):
             self._stories_endpoint(),
             json=self._story_params,
             headers=self._headers)
+        logger.info('create story response {}'.format(response.text))
         created_story = response.json()
         updated_story = self._move_to_top_of_backlog(created_story)
         return updated_story
@@ -97,7 +106,6 @@ class PivotalTracker(object):
 
     def _move_to_top_of_backlog(self, target_story):
         top_story = self._get_current_top_of_backlog()
-        print((top_story))
         if len(top_story) == 0:
             return target_story
 
@@ -110,6 +118,7 @@ class PivotalTracker(object):
             json=params,
             headers=self._headers,
         )
+        logger.info('updated story response {}'.format(response.text))
         return response.json()
 
     def _stories_endpoint(self):
@@ -143,6 +152,7 @@ class Targetprocess(object):
             self._stories_endpoint(),
             json=self._story_params,
             params=self._with_auth())
+        logger.info('create story response {}'.format(response.text))
         created_story = response.json()
         return created_story
 
