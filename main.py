@@ -56,7 +56,7 @@ def process_rule(config, rule_name):
 
 
 def handler_factory(config, story_params):
-    service = story_params['service']
+    service = story_params.pop('service')
     if service == 'pivotal-tracker':
         token = fetch_token(config['ssm_aws_region'], config['ssm_pt_token_path'])
         return PivotalTracker(token, story_params)
