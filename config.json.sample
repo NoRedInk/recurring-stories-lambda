@@ -2,7 +2,8 @@
   "ssm_pt_token_path": "/recurring-stories-lambda/pivotal-tracker-api-token",
   "ssm_aws_region": "us-west-2",
   "rules": {
-    "lambda-rule-name": {
+    "lambda-rule-name-one": {
+      "service": "pivotal-tracker",
       "project_id": 1234567,
       "story_type": "chore",
       "name": "value can interpolate {date}",

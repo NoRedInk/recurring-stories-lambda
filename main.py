@@ -9,9 +9,6 @@ import boto3
 
 
 CONFIG_FILE = 'config.json'
-DEFAULT_STORY_PARAMS = {
-    "current_state": "unstarted"
-}
 
 
 def on_event(event, context):
@@ -21,15 +18,10 @@ def on_event(event, context):
 
 
 def process_event(config, event):
-    ssm = boto3.client('ssm', region_name=config['ssm_aws_region'])
-    token = ssm.get_parameter(
-        Name=config['ssm_pt_token_path'],
-        WithDecryption=True,
-    )['Parameter']['Value']
     rv = []
 
     for rule_name in iter_rule_names(event):
-        rv.extend(process_rule(config, token, rule_name))
+        rv.extend(process_rule(config, rule_name))
 
     return rv
 
@@ -44,53 +36,94 @@ def iter_rule_names(event):
         yield resource.split('/', 1)[-1]
 
 
-def process_rule(config, pt_token, rule_name):
+def process_rule(config, rule_name):
     if rule_name not in config['rules']:
         return []
 
     story_spec = config['rules'][rule_name]
-
-    project_id = story_spec.pop('project_id')
     story_params = interpolate_story_spec(story_spec)
-    story_params.update(DEFAULT_STORY_PARAMS)
-
-    response = requests.post(
-        stories_endpoint(project_id),
-        json=story_params,
-        headers=headers(pt_token))
-    created_story = response.json()
-    updated_story = move_to_top_of_backlog(pt_token, project_id, created_story)
-
-    return [updated_story]
+    handler = handler_factory(config, story_params)
+    story = handler.create_story()
+    return [story]
 
 
-def get_current_top_of_backlog(pt_token, project_id):
-    params = {
-        'with_state': 'unstarted',
-        'limit': 1
+def handler_factory(config, story_params):
+    service = story_params['service']
+    if service == 'pivotal-tracker':
+        token = fetch_token(config['ssm_aws_region'], config['ssm_pt_token_path'])
+        return PivotalTracker(token, story_params)
+    raise Exception('Unknown service {}'.format(service))
+
+
+def fetch_token(region, ssm_path):
+    ssm = boto3.client('ssm', region_name=region)
+    return ssm.get_parameter(
+        Name=ssm_path,
+        WithDecryption=True,
+    )['Parameter']['Value']
+
+
+class PivotalTracker(object):
+    DEFAULT_STORY_PARAMS = {
+        "current_state": "unstarted"
     }
-    response = requests.get(
-        stories_endpoint(project_id),
-        params=params,
-        headers=headers(pt_token))
-    return response.json()
 
+    def __init__(self, token, story_params):
+        self._story_params = dict(self.DEFAULT_STORY_PARAMS, **story_params)
+        self._token = token
 
-def move_to_top_of_backlog(pt_token, project_id, story):
-    top_story = get_current_top_of_backlog(pt_token, project_id)
-    if len(top_story) == 0:
-        return story
+    def create_story(self):
+        response = requests.post(
+            self._stories_endpoint(),
+            json=self._story_params,
+            headers=self._headers)
+        created_story = response.json()
+        updated_story = self._move_to_top_of_backlog(created_story)
+        return updated_story
 
-    story_params = {
-        'group': 'scheduled',
-        'before_id': top_story[0]['id'],
-    }
-    response = requests.put(
-        story_endpoint(project_id, story['id']),
-        json=story_params,
-        headers=headers(pt_token),
-    )
-    return response.json()
+    def _get_current_top_of_backlog(self):
+        params = {
+            'with_state': 'unstarted',
+            'limit': 1
+        }
+        response = requests.get(
+            self._stories_endpoint(),
+            params=params,
+            headers=self._headers)
+        return response.json()
+
+    def _move_to_top_of_backlog(self, target_story):
+        top_story = self._get_current_top_of_backlog()
+        print((top_story))
+        if len(top_story) == 0:
+            return target_story
+
+        params = {
+            'group': 'scheduled',
+            'before_id': top_story[0]['id'],
+        }
+        response = requests.put(
+            self._story_endpoint(target_story['id']),
+            json=params,
+            headers=self._headers,
+        )
+        return response.json()
+
+    def _stories_endpoint(self):
+        return "https://www.pivotaltracker.com/services/v5/projects/{}/stories".format(self._project_id)
+
+    def _story_endpoint(self, story_id):
+        return "https://www.pivotaltracker.com/services/v5/projects/{}/stories/{}".format(self._project_id, story_id)
+
+    @property
+    def _project_id(self):
+        return self._story_params['project_id']
+
+    @property
+    def _headers(self):
+        return {
+            'X-TrackerToken': self._token,
+        }
 
 
 def interpolate_story_spec(spec):
@@ -105,20 +138,6 @@ def interpolate_value(value, context):
         return value.format(**context)
     else:
         return value
-
-
-def headers(pt_token):
-    return {
-        'X-TrackerToken': pt_token,
-    }
-
-
-def stories_endpoint(project_id):
-    return "https://www.pivotaltracker.com/services/v5/projects/{}/stories".format(project_id)
-
-
-def story_endpoint(project_id, story_id):
-    return "https://www.pivotaltracker.com/services/v5/projects/{}/stories/{}".format(project_id, story_id)
 
 
 if __name__ == '__main__':
