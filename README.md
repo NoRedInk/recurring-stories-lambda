@@ -42,21 +42,12 @@ aws --region=region-configured-in-config-json \
 ```
 virtualenv env
 . env/bin/activate
-pip-compile dev-requirements.in requirements.txt
 pip install -r requirements.txt
 pip install -r dev-requirements.txt
 pytest tests.py
 ```
 
 ## Upgrading a dependency
-
-If you have Nix, you can load a shell with the necessary dependencies like this:
-
-```
-nix-shell -p python37Packages.pip-tools
-```
-
-Once in the shell, run:
 
 ```
 pip-compile --upgrade-package my-package

@@ -1,6 +1,3 @@
-from __future__ import print_function
-
-import types
 import datetime
 import json
 import logging
@@ -171,11 +168,11 @@ def interpolate_story_spec(spec):
     context = {
         'date': datetime.date.today()
     }
-    return {k: interpolate_value(v, context) for (k, v) in spec.items()}
+    return {k: interpolate_value(v, context) for (k, v) in list(spec.items())}
 
 
 def interpolate_value(value, context):
-    if isinstance(value, types.StringTypes):
+    if isinstance(value, (str,)):
         return value.format(**context)
     else:
         return value
