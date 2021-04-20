@@ -4,9 +4,17 @@
 #
 #    pip-compile --output-file=dev-requirements.txt dev-requirements.in
 #
-click==7.0                # via pip-tools
+click==7.0
+    # via pip-tools
 pip-tools==4.2.0
-py==1.4.31                # via pytest
+    # via -r dev-requirements.in
+py==1.10.0
+    # via pytest
 pytest-mock==1.4.0
+    # via -r dev-requirements.in
 pytest==3.0.3
-six==1.10.0               # via pip-tools
+    # via
+    #   -r dev-requirements.in
+    #   pytest-mock
+six==1.10.0
+    # via pip-tools
