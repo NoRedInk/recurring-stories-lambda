@@ -15,4 +15,4 @@ python-dateutil==2.7.5    # via botocore
 requests==2.21.0
 s3transfer==0.1.13        # via boto3
 six==1.12.0               # via python-dateutil
-urllib3==1.24.3           # via requests
+urllib3==1.26.5           # via requests
